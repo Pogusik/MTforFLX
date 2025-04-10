@@ -6,42 +6,76 @@
     <title>FLX | Мультитул для SCP:SL</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header class="scp-header">
             <div class="logo-container">
-                <img src="assets/logo.png" alt="FLX Logo" class="logo">
+                <img src="./assets/cyan.png" alt="FLX Logo" class="logo" id="main-logo">
                 <div class="header-text">
-                    <h1>FLX Мультитул</h1>
-                    <p class="security-level">Уровень доступа: 4</p>
+                    <h1>FLX МУЛЬТИТУЛ</h1>
+                    <p class="security-level">УРОВЕНЬ ДОСТУПА: 4</p>
                 </div>
             </div>
-            <div class="site-code">SCP-SL-ADMIN-TOOL v1.0</div>
+            <div class="site-code">[FLX-TOOL-v1.0]</div>
         </header>
 
         <nav class="scp-tabs">
-            <button class="tab-btn active" data-tab="cassie">🎚️ CASSIE</button>
-            <button class="tab-btn" data-tab="cassie-editor">✏️ Редактор</button>
-            <button class="tab-btn" data-tab="cassie-checker">✅ Валидатор</button>
-            <button class="tab-btn" data-tab="clscript">🎮 CLscript</button>
-            <button class="tab-btn" data-tab="rpitem">🧳 RPitem</button>
-            <button class="tab-btn" data-tab="settings">⚙️ Настройки</button>
+            <button class="tab-btn active" data-tab="cassie">
+                <i class="fas fa-broadcast-tower tab-icon"></i>
+                <span>CASSIE</span>
+            </button>
+            <button class="tab-btn" data-tab="cassie-editor">
+                <i class="fas fa-edit tab-icon"></i>
+                <span>РЕДАКТОР</span>
+            </button>
+            <button class="tab-btn" data-tab="cassie-checker">
+                <i class="fas fa-check-circle tab-icon"></i>
+                <span>ВАЛИДАТОР</span>
+            </button>
+            <button class="tab-btn" data-tab="clscript">
+                <i class="fas fa-terminal tab-icon"></i>
+                <span>CLscript</span>
+            </button>
+            <button class="tab-btn" data-tab="rpitem">
+                <i class="fas fa-briefcase tab-icon"></i>
+                <span>RPitem</span>
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog tab-icon"></i>
+                <span>НАСТРОЙКИ</span>
+            </button>
         </nav>
 
         <main class="tab-content" id="tab-content">
             <!-- Содержимое вкладок будет загружаться динамически -->
+            <div class="scp-loading">
+                <div class="scp-loading-anim"></div>
+                <p>ЗАГРУЗКА МОДУЛЯ...</p>
+            </div>
         </main>
 
         <footer class="scp-footer">
             <div class="footer-content">
-                <span>Статус: <span class="status-active">АКТИВЕН</span></span>
-                <span>Версия: 1.0.0</span>
-                <span>© SCP Foundation</span>
+                <span>СТАТУС: <span class="status-active">АКТИВЕН</span></span>
+                <span>ВЕРСИЯ: 1.0.0</span>
+                <span>© SCP FOUNDATION</span>
             </div>
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js"></script><script>
+        // Перенесите этот код в конец app.js
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.close-modal')?.addEventListener('click', function() {
+                document.getElementById('copy-modal').style.display = 'none';
+            });
+            
+            window.closeModal = function() {
+                document.getElementById('copy-modal').style.display = 'none';
+            };
+        });
+    </script>
 </body>
 </html>

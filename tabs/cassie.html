@@ -1,45 +1,33 @@
-<div class="tab-content">
-    <h2><i class="fas fa-sliders-h"></i> CASSIE Пресеты</h2>
-    
-    <div class="search-container">
-        <input type="text" id="cassie-search" placeholder="Поиск по тегам или авторам...">
-        <button id="refresh-presets"><i class="fas fa-sync-alt"></i> Обновить</button>
-    </div>
-    
-    <div class="presets-container" id="presets-container">
-        <p>Загрузка пресетов...</p>
+<div class="cassie-container">
+    <div class="scp-panel">
+        <h2 class="scp-panel-title">CASSIE ПРЕСЕТЫ</h2>
+        
+        <div class="search-controls">
+            <div class="scp-input-container">
+                <i class="fas fa-search search-icon" style="
+padding-bottom: 8px;"></i>
+                <input type="text" id="cassie-search" class="scp-input" placeholder="Поиск по названию, автору или тегам...">
+            </div>
+            <button id="refresh-presets" class="scp-button">
+                <i class="fas fa-sync-alt"></i> Обновить
+            </button>
+        </div>
+        
+        <div class="presets-container" id="presets-container">
+            <div class="scp-loading">
+                <div class="scp-loading-anim"></div>
+                <p>ЗАГРУЗКА ПРЕСЕТОВ...</p>
+            </div>
+        </div>
     </div>
 </div>
-
-<script>
-    // Здесь будет код для загрузки и отображения пресетов CASSIE
-    document.addEventListener('DOMContentLoaded', function() {
-        loadCassiePresets();
-        
-        document.getElementById('refresh-presets').addEventListener('click', loadCassiePresets);
-        document.getElementById('cassie-search').addEventListener('input', filterPresets);
-    });
-    
-    function loadCassiePresets() {
-        fetch('https://raw.githubusercontent.com/Pogusik/Facility_11/main/cassie.txt')
-            .then(response => response.text())
-            .then(processPresets)
-            .catch(showError);
-    }
-    
-    function processPresets(data) {
-        // Обработка данных пресетов
-    }
-    
-    function filterPresets() {
-        // Фильтрация пресетов по поисковому запросу
-    }
-    
-    function showError(error) {
-        document.getElementById('presets-container').innerHTML = `
-            <div class="error">
-                Ошибка загрузки пресетов: ${error.message}
-            </div>
-        `;
-    }
-</script>
+<div id="copy-toast" class="copy-toast"></div>
+<!-- Модальное окно для копирования -->
+<div id="copy-modal" class="scp-modal">
+    <div class="scp-modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>Текст скопирован</h3>
+        <div class="copied-content" id="copied-content"></div>
+        <button class="scp-button" onclick="closeModal()">OK</button>
+    </div>
+</div>
