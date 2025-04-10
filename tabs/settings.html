@@ -1,22 +1,39 @@
-<h2>Настройки</h2>
-<p>Здесь будут настройки приложения (темы, масштаб и т.д.)</p>
-<label for="theme">Тема:</label>
-<select id="theme">
-    <option value="dark">Темная</option>
-    <option value="light">Светлая</option>
-    <option value="custom">Кастомная</option>
-</select>
-
-<label for="scale">Масштаб:</label>
-<input type="range" id="scale" min="80" max="150" value="100">
-<span id="scale-value">100%</span>
-
-<p>Discord: <a href="discord://-/users/778668132541530132">@pogusik</a></p>
+<div class="settings-container">
+    <h2><i class="fas fa-cog"></i> Настройки</h2>
+    
+    <section class="setting-section">
+        <h3>Тема оформления</h3>
+        <div class="theme-selector">
+            <div class="theme-option" data-theme="dark" style="background: #1a1a1a; color: white;">
+                Темная
+            </div>
+            <div class="theme-option" data-theme="light" style="background: white; color: black;">
+                Светлая
+            </div>
+            <div class="theme-option" data-theme="custom" style="background: linear-gradient(135deg, #3d9ca9, #333333); color: white;">
+                Серо-синяя
+            </div>
+        </div>
+    </section>
+    
+    <section class="setting-section">
+        <h3>Масштаб интерфейса</h3>
+        <input type="range" id="scale-slider" min="80" max="150" value="100">
+        <span id="scale-value">100%</span>
+    </section>
+    
+    <section class="setting-section">
+        <h3>Связь с разработчиком</h3>
+        <p>
+            <i class="fab fa-discord"></i> Discord: 
+            <a href="discord://-/users/778668132541530132" class="discord-link">@pogusik</a>
+        </p>
+    </section>
+</div>
 
 <script>
-    // Обработчики событий для настроек (пример)
-    document.getElementById('scale').addEventListener('input', function() {
-        document.getElementById('scale-value').textContent = this.value + '%';
-        document.body.style.zoom = this.value + '%'; // Пример изменения масштаба
+    // Обновляем отображение значения масштаба
+    document.getElementById('scale-slider').addEventListener('input', function() {
+        document.getElementById('scale-value').textContent = `${this.value}%`;
     });
 </script>

@@ -1,45 +1,45 @@
-<div class="tab-cassie">
-    <h2><i class="fas fa-sliders-alt"></i> CASSIE Прессеты</h2>
+<div class="tab-content">
+    <h2><i class="fas fa-sliders-h"></i> CASSIE Пресеты</h2>
     
-    <div class="search-bar">
-        <input type="text" placeholder="Поиск по тегам или авторам...">
+    <div class="search-container">
+        <input type="text" id="cassie-search" placeholder="Поиск по тегам или авторам...">
         <button id="refresh-presets"><i class="fas fa-sync-alt"></i> Обновить</button>
     </div>
     
-    <div class="presets-container">
-        <div class="preset-item">
-            <h3>SCP-939 Появление</h3>
-            <p class="preset-author">Автор: Pogusik</p>
-            <div class="preset-content">
-                <p class="preset-text">ATTENTION ALL PERSONNEL . SCP 9 3 9 HAS BREACHED CONTAINMENT</p>
-                <p class="preset-tags">Теги: 939, breach, warning</p>
-            </div>
-            <button class="copy-button"><i class="fas fa-copy"></i> Копировать</button>
-        </div>
-        
-        <!-- Другие пресеты будут загружаться динамически -->
-    </div>
-    
-    <div class="github-info">
-        <p>Пресеты загружаются из <a href="https://github.com/Pogusik/Facility_11" target="_blank">GitHub-репозитория</a></p>
+    <div class="presets-container" id="presets-container">
+        <p>Загрузка пресетов...</p>
     </div>
 </div>
 
 <script>
-// Скрипты специфичные для этой вкладки
-document.addEventListener('DOMContentLoaded', function() {
-    // Загрузка пресетов с GitHub
-    async function loadPresets() {
-        try {
-            const response = await fetch('https://raw.githubusercontent.com/Pogusik/Facility_11/main/cassie.txt');
-            const data = await response.text();
-            // Обработка данных...
-        } catch (error) {
-            console.error('Ошибка загрузки пресетов:', error);
-        }
+    // Здесь будет код для загрузки и отображения пресетов CASSIE
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCassiePresets();
+        
+        document.getElementById('refresh-presets').addEventListener('click', loadCassiePresets);
+        document.getElementById('cassie-search').addEventListener('input', filterPresets);
+    });
+    
+    function loadCassiePresets() {
+        fetch('https://raw.githubusercontent.com/Pogusik/Facility_11/main/cassie.txt')
+            .then(response => response.text())
+            .then(processPresets)
+            .catch(showError);
     }
     
-    document.getElementById('refresh-presets').addEventListener('click', loadPresets);
-    loadPresets();
-});
+    function processPresets(data) {
+        // Обработка данных пресетов
+    }
+    
+    function filterPresets() {
+        // Фильтрация пресетов по поисковому запросу
+    }
+    
+    function showError(error) {
+        document.getElementById('presets-container').innerHTML = `
+            <div class="error">
+                Ошибка загрузки пресетов: ${error.message}
+            </div>
+        `;
+    }
 </script>
