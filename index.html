@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLX | Мультитул для SCP:SL</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo-container">
+                <img id="dynamic-logo" src="assets/flx-logo.png" alt="FLX Logo">
+                <h1>FLX Мультитул</h1>
+            </div>
+        </header>
+
+        <nav class="tabs-container">
+            <button class="tab-button active" data-tab="cassie">
+                <i class="fas fa-sliders-alt"></i> CASSIE
+            </button>
+            <button class="tab-button" data-tab="cassie-editor">
+                <i class="fas fa-pencil-alt"></i> Редактор
+            </button>
+            <button class="tab-button" data-tab="cassie-checker">
+                <i class="fas fa-check-circle"></i> Валидатор
+            </button>
+            <button class="tab-button" data-tab="clscript">
+                <i class="fas fa-gamepad"></i> CLscript
+            </button>
+            <button class="tab-button" data-tab="rpitem">
+                <i class="fas fa-briefcase"></i> RPitem
+            </button>
+            <button class="tab-button" data-tab="settings">
+                <i class="fas fa-cog"></i> Настройки
+            </button>
+        </nav>
+
+        <main id="tab-content" class="tab-content">
+            <!-- Вкладки будут загружаться динамически -->
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Загрузка...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
