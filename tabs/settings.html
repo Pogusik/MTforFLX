@@ -1,0 +1,22 @@
+<h2>Настройки</h2>
+<p>Здесь будут настройки приложения (темы, масштаб и т.д.)</p>
+<label for="theme">Тема:</label>
+<select id="theme">
+    <option value="dark">Темная</option>
+    <option value="light">Светлая</option>
+    <option value="custom">Кастомная</option>
+</select>
+
+<label for="scale">Масштаб:</label>
+<input type="range" id="scale" min="80" max="150" value="100">
+<span id="scale-value">100%</span>
+
+<p>Discord: <a href="discord://-/users/778668132541530132">@pogusik</a></p>
+
+<script>
+    // Обработчики событий для настроек (пример)
+    document.getElementById('scale').addEventListener('input', function() {
+        document.getElementById('scale-value').textContent = this.value + '%';
+        document.body.style.zoom = this.value + '%'; // Пример изменения масштаба
+    });
+</script>
