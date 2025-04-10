@@ -1,0 +1,118 @@
+/* Основные стили */
+:root {
+    --primary-color: #3d9ca9;
+    --secondary-color: #333333;
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+}
+
+.dark-theme {
+    --primary-color: #3d9ca9;
+    --secondary-color: #333333;
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+}
+
+.light-theme {
+    --primary-color: #2c7be5;
+    --secondary-color: #f0f0f0;
+    --background-color: #ffffff;
+    --text-color: #333333;
+}
+
+/* Общие стили */
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Стили вкладок */
+.tabs-container {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: all 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button:hover {
+    opacity: 1;
+    background-color: rgba(61, 156, 169, 0.1);
+}
+
+.tab-button.active {
+    opacity: 1;
+    border-bottom-color: var(--primary-color);
+    font-weight: bold;
+}
+
+.tab-button i {
+    margin-right: 8px;
+}
+
+.tab-content {
+    min-height: 500px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для уведомления об обновлении */
+.update-notification {
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    text-align: center;
+    z-index: 1000;
+    transition: bottom 0.3s;
+}
+
+.update-notification.show {
+    bottom: 0;
+}
+
+.update-notification button {
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 5px 15px;
+    margin-left: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .tabs-container {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        flex: 1 0 50%;
+        text-align: center;
+    }
+}
