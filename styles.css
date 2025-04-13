@@ -840,3 +840,210 @@ body {
 .tag {
     transition: all 0.2s ease;
 }
+
+/* Discord профили */
+.profile-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.profile-link:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.mini-profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.mini-profile-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.mini-profile-content {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--accent-color);
+    width: 340px;
+    max-width: 90%;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transform: translateY(-20px);
+    transition: transform 0.3s;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.mini-profile-modal.active .mini-profile-content {
+    transform: translateY(0);
+}
+
+.close-mini-profile {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.2s;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.close-mini-profile:hover {
+    color: var(--accent-color);
+}
+
+.profile-banner {
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.profile-avatar-container {
+    position: relative;
+    margin-top: -40px;
+    padding-left: 20px;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 6px solid var(--panel-bg);
+    background-color: var(--panel-bg);
+    object-fit: cover;
+}
+
+.server-avatar {
+    border-radius: 25%;
+}
+
+.user-status {
+    position: absolute;
+    bottom: 10px;
+    left: 70px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 4px solid var(--panel-bg);
+}
+
+.status-online { background-color: #3ba55c; }
+.status-idle { background-color: #faa61a; }
+.status-dnd { background-color: #ed4245; }
+.status-offline { background-color: #737f8d; }
+
+.profile-info {
+    padding: 0 20px 20px;
+}
+
+.profile-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.profile-username {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.profile-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 15px 0;
+}
+
+.server-members {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.server-members-count {
+    font-size: 14px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.profile-button {
+    background-color: var(--accent-color);
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.profile-button:hover {
+    background-color: var(--primary-color);
+}
+
+.profile-badge {
+    background-color: #9c84ef;
+    color: white;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.error-message {
+    color: #ff6b6b;
+    text-align: center;
+    margin: 20px 0;
+}

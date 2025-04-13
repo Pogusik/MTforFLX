@@ -155,7 +155,7 @@
         <div class="info-content">
             <p>Данное приложение <strong>не является</strong> официальным продуктом, разработанным техниками FLX-project.</p>
             <p>Оно было создано сторонним разработчиком 
-                <a href="discord://-/users/778668132541530132" class="discord-link">
+                <a href="#" id="user-profile-link" class="discord-link">
                     @pogusik
                     <img src="./assets/discord-icon.png" alt="Discord" class="link-icon">
                 </a> 
@@ -163,7 +163,7 @@
             </p>
             
             <div class="project-link">
-                <a href="https://discord.gg/flx-project" target="_blank" class="flx-link">
+                <a href="#" id="server-profile-link" target="_blank" class="flx-link">
                     FLX-project
                     <img src="./assets/flxp-icon.png" alt="FLXP" class="link-icon" style="
     width: 20px;
@@ -173,4 +173,27 @@
             </div>
         </div>
     </div>
+    <div class="scp-settings-container">
+        <!-- Мини-профиль пользователя -->
+        <div class="mini-profile-modal" id="user-profile-modal">
+            <div class="mini-profile-content">
+                <span class="close-mini-profile">&times;</span>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Загрузка профиля...</p>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Мини-профиль сервера -->
+        <div class="mini-profile-modal" id="server-profile-modal">
+            <div class="mini-profile-content">
+                <span class="close-mini-profile">&times;</span>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Загрузка сервера...</p>
+                </div>
+            </div>
+        </div>
+    </div> 
 </div>
