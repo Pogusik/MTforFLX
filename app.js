@@ -99,6 +99,209 @@ function initSettingsTab() {
             changeTheme(this.dataset.theme);
         });
     });
+    const SERVER_INVITE_CODE = 'flx-project';
+    const USER_INVITE_CODE = 'RgaA2yh3yd';
+
+    const userProfileLink = document.getElementById('user-profile-link');
+    const serverProfileLink = document.getElementById('server-profile-link');
+    const userModal = document.getElementById('user-profile-modal');
+    const serverModal = document.getElementById('server-profile-modal');
+
+    // Загружаем данные при открытии вкладки
+    loadDiscordProfiles();
+
+    async function loadDiscordProfiles() {
+        try {
+            const [serverData, userData] = await Promise.all([
+                fetchServerData(SERVER_INVITE_CODE),
+                fetchUserDataFromInvite(USER_INVITE_CODE)
+            ]);
+
+            // Добавляем обработчики кликов
+            userProfileLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await showUserProfile(userData);
+            });
+
+            serverProfileLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await showServerProfile(serverData);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+            showError(userModal.querySelector('.mini-profile-content'), error);
+        }
+    }
+
+    async function fetchServerData(inviteCode) {
+        try {
+            const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
+            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+            const data = await response.json();
+            return {
+                id: data.guild.id,
+                name: data.guild.name,
+                description: data.guild.description,
+                icon: data.guild.icon,
+                banner: data.guild.banner,
+                member_count: data.approximate_member_count,
+                online_count: data.approximate_presence_count
+            };
+        } catch (error) {
+            console.error('Ошибка загрузки сервера:', error);
+            return {
+                id: '702074452317798481',
+                name: 'FLX-project',
+                description: 'Официальный сервер проекта FLX',
+                icon: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
+                banner: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
+                member_count: 1234,
+                online_count: 567
+            };
+        }
+    }
+
+async function fetchUserDataFromInvite(inviteCode) {
+    try {
+        const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+
+        const data = await response.json();
+        if (!data.inviter) throw new Error('Пользователь не найден в инвайт-коде');
+
+        // Получаем цвет баннера на основе хэша аватара
+        const bannerColor = await getDominantColorFromImage(
+            `https://cdn.discordapp.com/avatars/${data.inviter.id}/${data.inviter.avatar}.webp?size=256`
+        );
+
+        return {
+            id: data.inviter.id,
+            username: data.inviter.username,
+            global_name: data.inviter.global_name || data.inviter.username,
+            discriminator: data.inviter.discriminator,
+            avatar: data.inviter.avatar,
+            banner_color: bannerColor,
+            isBot: data.inviter.bot || false
+        };
+    } catch (error) {
+        console.error('Ошибка загрузки пользователя:', error);
+        // Возвращаем данные пользователя из вашего инвайт-кода https://discord.gg/RgaA2yh3yd
+        return {
+            id: '778668132541530132',
+            username: 'pogusik',
+            global_name: 'Pogusik',
+            discriminator: '0000',
+            avatar: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
+            banner_color: '#006b75',
+            isBot: false
+        };
+    }
+}
+
+    async function showUserProfile(userData) {
+        userModal.classList.add('active');
+        userModal.querySelector('.mini-profile-content').innerHTML = `
+            <span class="close-mini-profile">&times;</span>
+            <div class="profile-banner" style="background-color: ${userData.banner_color}"></div>
+            <div class="profile-avatar-container">
+                <img src="${getAvatarUrl(userData, 256)}" class="profile-avatar">
+                <div class="user-status ${await estimateUserStatus(userData.id)}"></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">
+                    ${userData.global_name || userData.username}
+                    ${userData.isBot ? '<span class="profile-badge"><i class="fas fa-robot"></i> Бот</span>' : ''}
+                </div>
+                <div class="profile-username">@${userData.username}</div>
+                <div class="profile-divider"></div>
+                <div class="profile-actions">
+                    <button class="profile-button" onclick="window.open('https://discord.com/users/${userData.id}')">
+                        <i class="fab fa-discord"></i> Профиль
+                    </button>
+                </div>
+            </div>
+        `;
+        addModalCloseHandlers(userModal);
+    }
+
+    async function showServerProfile(serverData) {
+        serverModal.classList.add('active');
+        serverModal.querySelector('.mini-profile-content').innerHTML = `
+            <span class="close-mini-profile">&times;</span>
+            <div class="profile-banner" style="${serverData.banner ? `background-image: url('https://cdn.discordapp.com/banners/${serverData.id}/${serverData.banner}.webp?size=600')` : ''}"></div>
+            <div class="profile-avatar-container">
+                <img src="${getServerIconUrl(serverData, 256)}" class="profile-avatar server-avatar">
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">${serverData.name}</div>
+                ${serverData.description ? `<div class="profile-username">${serverData.description}</div>` : ''}
+                <div class="profile-divider"></div>
+                <div class="server-members">
+                    <i class="fas fa-users"></i>
+                    <div class="server-members-count">
+                        ${formatNumber(serverData.member_count)} участников<br>
+                        <small>${formatNumber(serverData.online_count || 0)} онлайн</small>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="profile-button" onclick="window.open('https://discord.gg/${SERVER_INVITE_CODE}')">
+                        <i class="fab fa-discord"></i> Присоединиться
+                    </button>
+                </div>
+            </div>
+        `;
+        addModalCloseHandlers(serverModal);
+    }
+
+    function getAvatarUrl(user, size = 80) {
+        if (user.avatar) {
+            return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=${size}`;
+        } else {
+            const discriminator = user.discriminator || '0000';
+            return `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png?size=${size}`;
+        }
+    }
+
+    function getServerIconUrl(server, size = 80) {
+        if (server.icon) {
+            return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.webp?size=${size}`;
+        } else {
+            return `https://cdn.discordapp.com/embed/avatars/0.png?size=${size}`;
+        }
+    }
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function addModalCloseHandlers(modal) {
+        modal.querySelector('.close-mini-profile').addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    }
+
+    function showError(container, error) {
+        container.innerHTML = `
+            <div class="error-message">
+                <p>Произошла ошибка</p>
+                <small>${error.message}</small>
+                <button onclick="location.reload()" class="profile-button">Повторить</button>
+            </div>
+        `;
+    }
+
+    async function estimateUserStatus(userId) {
+        const statuses = ['online', 'idle', 'dnd', 'offline'];
+        return statuses[Math.floor(Math.random() * statuses.length)];
+    }
+
 }
 
 function changeTheme(themeName) {
@@ -392,212 +595,6 @@ function renderPresets(presets) {
     });
 }
 
-
-// Инициализация вкладки настроек (Discord профили)
-function initSettingsTab() {
-    const SERVER_INVITE_CODE = 'flx-project';
-    const USER_INVITE_CODE = 'RgaA2yh3yd';
-
-    const userProfileLink = document.getElementById('user-profile-link');
-    const serverProfileLink = document.getElementById('server-profile-link');
-    const userModal = document.getElementById('user-profile-modal');
-    const serverModal = document.getElementById('server-profile-modal');
-
-    // Загружаем данные при открытии вкладки
-    loadDiscordProfiles();
-
-    async function loadDiscordProfiles() {
-        try {
-            const [serverData, userData] = await Promise.all([
-                fetchServerData(SERVER_INVITE_CODE),
-                fetchUserDataFromInvite(USER_INVITE_CODE)
-            ]);
-
-            // Добавляем обработчики кликов
-            userProfileLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await showUserProfile(userData);
-            });
-
-            serverProfileLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await showServerProfile(serverData);
-            });
-        } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-            showError(userModal.querySelector('.mini-profile-content'), error);
-        }
-    }
-
-    async function fetchServerData(inviteCode) {
-        try {
-            const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
-            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-
-            const data = await response.json();
-            return {
-                id: data.guild.id,
-                name: data.guild.name,
-                description: data.guild.description,
-                icon: data.guild.icon,
-                banner: data.guild.banner,
-                member_count: data.approximate_member_count,
-                online_count: data.approximate_presence_count
-            };
-        } catch (error) {
-            console.error('Ошибка загрузки сервера:', error);
-            return {
-                id: '702074452317798481',
-                name: 'FLX-project',
-                description: 'Официальный сервер проекта FLX',
-                icon: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
-                banner: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
-                member_count: 1234,
-                online_count: 567
-            };
-        }
-    }
-
-    async function fetchUserDataFromInvite(inviteCode) {
-        try {
-            const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
-            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-    
-            const data = await response.json();
-            if (!data.inviter) throw new Error('Пользователь не найден в инвайт-коде');
-    
-            // Получаем цвет баннера на основе хэша аватара
-            const bannerColor = await getDominantColorFromImage(
-                `https://cdn.discordapp.com/avatars/${data.inviter.id}/${data.inviter.avatar}.webp?size=256`
-            );
-    
-            return {
-                id: data.inviter.id,
-                username: data.inviter.username,
-                global_name: data.inviter.global_name || data.inviter.username,
-                discriminator: data.inviter.discriminator,
-                avatar: data.inviter.avatar,
-                banner_color: bannerColor,
-                isBot: data.inviter.bot || false
-            };
-        } catch (error) {
-            console.error('Ошибка загрузки пользователя:', error);
-            // Возвращаем данные пользователя из вашего инвайт-кода https://discord.gg/RgaA2yh3yd
-            return {
-                id: '778668132541530132',
-                username: 'pogusik',
-                global_name: 'Pogusik',
-                discriminator: '0000',
-                avatar: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
-                banner_color: '#006b75',
-                isBot: false
-            };
-        }
-    }
-
-    async function showUserProfile(userData) {
-        userModal.classList.add('active');
-        userModal.querySelector('.mini-profile-content').innerHTML = `
-            <span class="close-mini-profile">&times;</span>
-            <div class="profile-banner" style="background-color: ${userData.banner_color}"></div>
-            <div class="profile-avatar-container">
-                <img src="${getAvatarUrl(userData, 256)}" class="profile-avatar">
-                <div class="user-status ${await estimateUserStatus(userData.id)}"></div>
-            </div>
-            <div class="profile-info">
-                <div class="profile-name">
-                    ${userData.global_name || userData.username}
-                    ${userData.isBot ? '<span class="profile-badge"><i class="fas fa-robot"></i> Бот</span>' : ''}
-                </div>
-                <div class="profile-username">@${userData.username}</div>
-                <div class="profile-divider"></div>
-                <div class="profile-actions">
-                    <button class="profile-button" onclick="window.open('https://discord.com/users/${userData.id}')">
-                        <i class="fab fa-discord"></i> Профиль
-                    </button>
-                </div>
-            </div>
-        `;
-        addModalCloseHandlers(userModal);
-    }
-
-    async function showServerProfile(serverData) {
-        serverModal.classList.add('active');
-        serverModal.querySelector('.mini-profile-content').innerHTML = `
-            <span class="close-mini-profile">&times;</span>
-            <div class="profile-banner" style="${serverData.banner ? `background-image: url('https://cdn.discordapp.com/banners/${serverData.id}/${serverData.banner}.webp?size=600')` : ''}"></div>
-            <div class="profile-avatar-container">
-                <img src="${getServerIconUrl(serverData, 256)}" class="profile-avatar server-avatar">
-            </div>
-            <div class="profile-info">
-                <div class="profile-name">${serverData.name}</div>
-                ${serverData.description ? `<div class="profile-username">${serverData.description}</div>` : ''}
-                <div class="profile-divider"></div>
-                <div class="server-members">
-                    <i class="fas fa-users"></i>
-                    <div class="server-members-count">
-                        ${formatNumber(serverData.member_count)} участников<br>
-                        <small>${formatNumber(serverData.online_count || 0)} онлайн</small>
-                    </div>
-                </div>
-                <div class="profile-actions">
-                    <button class="profile-button" onclick="window.open('https://discord.gg/${SERVER_INVITE_CODE}')">
-                        <i class="fab fa-discord"></i> Присоединиться
-                    </button>
-                </div>
-            </div>
-        `;
-        addModalCloseHandlers(serverModal);
-    }
-
-    function getAvatarUrl(user, size = 80) {
-        if (user.avatar) {
-            return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=${size}`;
-        } else {
-            const discriminator = user.discriminator || '0000';
-            return `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png?size=${size}`;
-        }
-    }
-
-    function getServerIconUrl(server, size = 80) {
-        if (server.icon) {
-            return `https://cdn.discordapp.com/icons/${server.id}/${server.icon}.webp?size=${size}`;
-        } else {
-            return `https://cdn.discordapp.com/embed/avatars/0.png?size=${size}`;
-        }
-    }
-
-    function formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    function addModalCloseHandlers(modal) {
-        modal.querySelector('.close-mini-profile').addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-    }
-
-    function showError(container, error) {
-        container.innerHTML = `
-            <div class="error-message">
-                <p>Произошла ошибка</p>
-                <small>${error.message}</small>
-                <button onclick="location.reload()" class="profile-button">Повторить</button>
-            </div>
-        `;
-    }
-
-    async function estimateUserStatus(userId) {
-        const statuses = ['online', 'idle', 'dnd', 'offline'];
-        return statuses[Math.floor(Math.random() * statuses.length)];
-    }
-}
 
 
 
