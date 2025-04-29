@@ -162,43 +162,117 @@ function initSettingsTab() {
         }
     }
 
-async function fetchUserDataFromInvite(inviteCode) {
-    try {
-        const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
-        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
-
-        const data = await response.json();
-        if (!data.inviter) throw new Error('Пользователь не найден в инвайт-коде');
-
-        // Получаем цвет баннера на основе хэша аватара
-        const bannerColor = await getDominantColorFromImage(
-            `https://cdn.discordapp.com/avatars/${data.inviter.id}/${data.inviter.avatar}.webp?size=256`
-        );
-
-        return {
-            id: data.inviter.id,
-            username: data.inviter.username,
-            global_name: data.inviter.global_name || data.inviter.username,
-            discriminator: data.inviter.discriminator,
-            avatar: data.inviter.avatar,
-            banner_color: bannerColor,
-            isBot: data.inviter.bot || false
-        };
-    } catch (error) {
-        console.error('Ошибка загрузки пользователя:', error);
-        // Возвращаем данные пользователя из вашего инвайт-кода https://discord.gg/RgaA2yh3yd
-        return {
-            id: '778668132541530132',
-            username: 'pogusik',
-            global_name: 'Pogusik',
-            discriminator: '0000',
-            avatar: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
-            banner_color: '#006b75',
-            isBot: false
-        };
+    async function fetchUserDataFromInvite(inviteCode) {
+        try {
+            const response = await fetch(`https://discord.com/api/v9/invites/${inviteCode}?with_counts=true`);
+            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+    
+            const data = await response.json();
+            if (!data.inviter) throw new Error('Пользователь не найден в инвайт-коде');
+    
+            // Получаем URL аватарки
+            const avatarUrl = `https://cdn.discordapp.com/avatars/${data.inviter.id}/${data.inviter.avatar}.webp?size=256`;
+            
+            // Получаем доминирующий цвет аватарки
+            const bannerColor = await getDominantColorFromImage(avatarUrl);
+    
+            return {
+                id: data.inviter.id,
+                username: data.inviter.username,
+                global_name: data.inviter.global_name || data.inviter.username,
+                discriminator: data.inviter.discriminator,
+                avatar: data.inviter.avatar,
+                banner_color: bannerColor || '#006b75', // Используем полученный цвет или цвет по умолчанию
+                isBot: data.inviter.bot || false
+            };
+        } catch (error) {
+            console.error('Ошибка загрузки пользователя:', error);
+            return {
+                id: '778668132541530132',
+                username: 'pogusik',
+                global_name: 'Pogusik',
+                discriminator: '0000',
+                avatar: 'a_3e7a7e7e7e7e7e7e7e7e7e7e7e7e7e7',
+                banner_color: '#006b75',
+                isBot: false
+            };
+        }
     }
-}
+    
+    async function getDominantColorFromImage(imageUrl) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous'; // Для работы с CORS
+            img.src = imageUrl;
+            
+            img.onload = function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Получаем данные изображения
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    
+                    // Анализируем цвета
+                    const colorCounts = {};
+                    for (let i = 0; i < imageData.length; i += 4) {
+                        const r = imageData[i];
+                        const g = imageData[i + 1];
+                        const b = imageData[i + 2];
+                        const a = imageData[i + 3];
+                        
+                        // Пропускаем прозрачные пиксели
+                        if (a < 128) continue;
+                        
+                        const color = `${r},${g},${b}`;
+                        colorCounts[color] = (colorCounts[color] || 0) + 1;
+                    }
+                    
+                    // Находим наиболее часто встречающийся цвет
+                    let maxCount = 0;
+                    let dominantColor = null;
+                    
+                    for (const color in colorCounts) {
+                        if (colorCounts[color] > maxCount) {
+                            maxCount = colorCounts[color];
+                            dominantColor = color;
+                        }
+                    }
+                    
+                    if (dominantColor) {
+                        const [r, g, b] = dominantColor.split(',');
+                        resolve(`rgb(${r}, ${g}, ${b})`);
+                    } else {
+                        resolve('#006b75'); // Цвет по умолчанию
+                    }
+                } catch (error) {
+                    console.error('Ошибка анализа цвета:', error);
+                    resolve('#006b75'); // Цвет по умолчанию в случае ошибки
+                }
+            };
+            
+            img.onerror = function() {
+                console.error('Ошибка загрузки изображения для анализа цвета');
+                resolve('#006b75'); // Цвет по умолчанию
+            };
+        });
+    }
+    
+    // Вспомогательная функция для генерации случайного цвета
+    function getRandomColor() {
+        const colors = ['#006b75', '#1b5e20', '#552b5e', '#1b355c', '#921212', '#57917c', '#77663d', '#424242'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
 
+// Вспомогательная функция для генерации случайного цвета
+function getRandomColor() {
+    const colors = ['#006b75', '#1b5e20', '#552b5e', '#1b355c', '#921212', '#57917c', '#77663d', '#424242'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
     async function showUserProfile(userData) {
         userModal.classList.add('active');
         userModal.querySelector('.mini-profile-content').innerHTML = `
@@ -206,7 +280,6 @@ async function fetchUserDataFromInvite(inviteCode) {
             <div class="profile-banner" style="background-color: ${userData.banner_color}"></div>
             <div class="profile-avatar-container">
                 <img src="${getAvatarUrl(userData, 256)}" class="profile-avatar">
-                <div class="user-status ${await estimateUserStatus(userData.id)}"></div>
             </div>
             <div class="profile-info">
                 <div class="profile-name">
@@ -215,6 +288,7 @@ async function fetchUserDataFromInvite(inviteCode) {
                 </div>
                 <div class="profile-username">@${userData.username}</div>
                 <div class="profile-divider"></div>
+                <div class="profile-username">Pogus | «Пульсар» — ведущий разработчик <b>FLX-TOOL</b>, по всем вопросам обращаться к нему:</div>
                 <div class="profile-actions">
                     <button class="profile-button" onclick="window.open('https://discord.com/users/${userData.id}')">
                         <i class="fab fa-discord"></i> Профиль
