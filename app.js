@@ -389,6 +389,24 @@ function changeTheme(themeName) {
     // Добавляем новый класс темы
     document.body.classList.add(`${themeName}-theme`);
     
+    // Обновляем favicon
+    const favicon = document.getElementById('favicon');
+    if (favicon) {
+        favicon.href = `./assets/${themeName}.png`;
+        // Принудительно обновляем favicon в браузере
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.href = `./assets/${themeName}.png`;
+        newFavicon.id = 'favicon';
+        newFavicon.type = 'image/x-icon';
+        
+        const oldFavicon = document.getElementById('favicon');
+        if (oldFavicon) {
+            document.head.removeChild(oldFavicon);
+        }
+        document.head.appendChild(newFavicon);
+    }
+    
     // Обновляем логотип в основном интерфейсе
     updateLogo(themeName);
     
@@ -403,7 +421,6 @@ function changeTheme(themeName) {
     // Сохраняем в localStorage
     localStorage.setItem('theme', themeName);
 }
-
 function updateLogo(themeName) {
     const logo = document.querySelector('#main-logo');
     if (logo) {
@@ -458,6 +475,11 @@ function updateThemeVariables(themeName) {
 // При загрузке страницы применяем сохраненную тему
 document.addEventListener('DOMContentLoaded', function() {
     const savedTheme = localStorage.getItem('theme') || 'cyan';
+    // Устанавливаем favicon до вызова changeTheme
+    const favicon = document.getElementById('favicon');
+    if (favicon) {
+        favicon.href = `./assets/${savedTheme}.png`;
+    }
     changeTheme(savedTheme);
 });
 
