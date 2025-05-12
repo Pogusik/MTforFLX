@@ -1,0 +1,94 @@
+<div class="scp-panel">
+    <h2 class="scp-panel-title">КОНВЕРТЕР ИЗОБРАЖЕНИЙ В ЦВЕТНОЙ ТЕКСТ</h2>
+    
+    <div class="converter-container">
+        <div class="input-section">
+            <h3>Загрузите изображение</h3>
+            <label for="imageInput" class="scp-button">
+                <i class="fas fa-upload"></i> ВЫБРАТЬ ИЗОБРАЖЕНИЕ
+            </label>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <div id="imageContainer">
+                <img id="imagePreview" style="max-width: 100%; max-height: 300px; display: none; margin-top: 15px;">
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Настройки преобразования</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="textBefore">Текст перед изображением:</label>
+                    <textarea id="textBefore" class="scp-input" rows="3"><b><size=24>Вы выбрали предмет: <color=yellow><u>Потёртая фотография</u></color></b></textarea>
+                </div>
+            </div>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="charType">Символ для отрисовки:</label>
+                    <select id="charType" class="scp-input">
+                        <option value="█" selected>█ (Блок)</option>
+                        <option value="■">■ (Квадрат)</option>
+                        <option value="▄">▄ (Полублок)</option>
+                        <option value="@">@</option>
+                        <option value="#">#</option>
+                        <option value="*">*</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="lineHeight">Высота строки:</label>
+                    <input type="text" id="lineHeight" class="scp-input" value="70%">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="mspace">Межсимвольный интервал:</label>
+                    <input type="text" id="mspace" class="scp-input" value="0.21em">
+                </div>
+            </div>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="fontSize">Размер шрифта:</label>
+                    <input type="text" id="fontSize" class="scp-input" value="14">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="widthLimit">Ширина (в символах):</label>
+                    <input type="number" id="widthLimit" class="scp-input" value="50" min="10" max="200">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="colorPrecision">Точность цветов (1-10):</label>
+                    <input type="number" id="colorPrecision" class="scp-input" value="5" min="1" max="10">
+                </div>
+            </div>
+            
+            <button id="convertBtn" class="scp-button">
+                <i class="fas fa-exchange-alt"></i> ПРЕОБРАЗОВАТЬ В ТЕКСТ
+            </button>
+        </div>
+        
+        <div class="preview-section">
+            <h3>Предпросмотр</h3>
+            <div class="preview-container">
+                <div class="preview-column">
+                    <h4>Исходное изображение</h4>
+                    <img id="previewImage" style="max-width: 100%; max-height: 300px; display: none;">
+                </div>
+                <div class="preview-column">
+                    <h4>Текстовый результат</h4>
+                    <div id="textPreview" class="preview-output"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <h3>Результат для копирования</h3>
+            <button id="copyBtn" class="scp-button copy-btn">
+                <i class="far fa-copy"></i> КОПИРОВАТЬ КОД
+            </button>
+            <textarea id="outputText" class="scp-input" readonly style="height: 300px;"></textarea>
+        </div>
+    </div>
+</div>

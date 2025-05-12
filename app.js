@@ -378,6 +378,163 @@ function getRandomColor() {
 
 }
 
+function initConverterTab() {
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const convertBtn = document.getElementById('convertBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const outputText = document.getElementById('outputText');
+    const textPreview = document.getElementById('textPreview');
+    
+    let uploadedImage = null;
+    
+    // Обработчик загрузки изображения
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            imagePreview.src = event.target.result;
+            previewImage.src = event.target.result;
+            imagePreview.style.display = 'block';
+            previewImage.style.display = 'block';
+            uploadedImage = imagePreview;
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // Обработчик конвертации
+    convertBtn.addEventListener('click', function() {
+        if (!uploadedImage) {
+            showToast('Пожалуйста, загрузите изображение сначала');
+            return;
+        }
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = uploadedImage;
+        
+        // Устанавливаем размеры canvas
+        const widthLimit = parseInt(document.getElementById('widthLimit').value);
+        const aspectRatio = img.naturalHeight / img.naturalWidth;
+        canvas.width = widthLimit;
+        canvas.height = Math.floor(widthLimit * aspectRatio);
+        
+        // Рисуем изображение на canvas
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Получаем данные пикселей
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Настройки
+        const charType = document.getElementById('charType').value;
+        const lineHeight = document.getElementById('lineHeight').value;
+        const mspace = document.getElementById('mspace').value;
+        const fontSize = document.getElementById('fontSize').value;
+        const colorPrecision = parseInt(document.getElementById('colorPrecision').value);
+        const textBefore = document.getElementById('textBefore').value;
+        
+        // Генерируем текст
+        let result = textBefore + '\n\n';
+        let previewHtml = '';
+        
+        // Добавляем настройки стиля
+        result += `<line-height=${lineHeight}><mspace=${mspace}><b><size=${fontSize}>`;
+        previewHtml += `<div style="line-height:${lineHeight}; letter-spacing:${mspace}; font-size:${fontSize}px; font-family: 'Courier New', monospace; font-weight: bold;">`;
+        
+        // Обрабатываем каждый пиксель
+        for (let y = 0; y < canvas.height; y++) {
+            let line = '';
+            let previewLine = '<div>';
+            
+            for (let x = 0; x < canvas.width; x++) {
+                const index = (y * canvas.width + x) * 4;
+                const r = data[index];
+                const g = data[index + 1];
+                const b = data[index + 2];
+                
+                // Преобразуем RGB в HEX с учетом точности
+                const hexColor = rgbToHex(r, g, b, colorPrecision);
+                
+                // Добавляем символ с цветом
+                line += `<color=#${hexColor}>${charType}</color>`;
+                previewLine += `<span style="color: #${hexColor};">${charType}</span>`;
+            }
+            
+            result += line + '\n';
+            previewLine += '</div>';
+            previewHtml += previewLine;
+        }
+        
+        // Закрываем теги
+        result += `</b></color></size>`;
+        previewHtml += '</div>';
+        
+        outputText.value = result;
+        textPreview.innerHTML = previewHtml;
+    });
+    
+    // Функция преобразования RGB в HEX с уменьшенной точностью
+    function rgbToHex(r, g, b, precision) {
+        const factor = Math.pow(2, 8 - precision);
+        r = Math.floor(r / factor) * factor;
+        g = Math.floor(g / factor) * factor;
+        b = Math.floor(b / factor) * factor;
+        
+        const toHex = (c) => {
+            const hex = c.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+        
+        return toHex(r) + toHex(g) + toHex(b);
+    }
+    
+    // Копирование результата
+    copyBtn.addEventListener('click', function() {
+        if (!outputText.value) {
+            showToast('Нет данных для копирования');
+            return;
+        }
+        
+        outputText.select();
+        document.execCommand('copy');
+        showToast('Код скопирован в буфер обмена');
+    });
+}
+
+function initTabScripts(tabId) {
+    document.querySelectorAll('.tab-icon').forEach(icon => {
+        icon.style.color = '#ccc';
+    });
+    
+    const activeIcon = document.querySelector(`.tab-btn.active .tab-icon`);
+    if (activeIcon) {
+        activeIcon.style.color = 'var(--accent-color)';
+    }
+    
+    switch(tabId) {
+        case 'settings':
+            initSettingsTab();
+            break;
+        case 'cassie':
+            initCassieTab();
+            break;
+        case 'cassie-editor':
+            initEditorTab();
+            break;
+        case 'rpitem':
+            initRPTab();
+            break;
+        case 'converter':
+            initConverterTab();
+            break;
+    }
+}
+
+
 function changeTheme(themeName) {
     // Удаляем предыдущие классы тем
     document.body.classList.remove(
