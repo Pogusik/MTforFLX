@@ -412,6 +412,21 @@ function initConverterTab() {
             return;
         }
         
+        // Получаем параметры RPItem
+        const playerId = document.getElementById('playerId').value;
+        const itemId = document.getElementById('itemId').value;
+        const posX = document.getElementById('posX').value;
+        const posY = document.getElementById('posY').value;
+        const posZ = document.getElementById('posZ').value;
+        const time = document.getElementById('time').value;
+        const itemText = document.getElementById('itemText').value;
+        
+        // Получаем параметры текста
+        const fontSize = document.getElementById('fontSize').value;
+        const lineHeight = document.getElementById('lineHeight').value;
+        const mspace = document.getElementById('mspace').value;
+        
+        // Генерируем изображение
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = uploadedImage;
@@ -429,21 +444,13 @@ function initConverterTab() {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
         
-        // Настройки
+        // Настройки изображения
         const charType = document.getElementById('charType').value;
-        const lineHeight = document.getElementById('lineHeight').value;
-        const mspace = document.getElementById('mspace').value;
-        const fontSize = document.getElementById('fontSize').value;
         const colorPrecision = parseInt(document.getElementById('colorPrecision').value);
-        const textBefore = document.getElementById('textBefore').value;
         
-        // Генерируем текст
-        let result = textBefore + '\n\n';
-        let previewHtml = '';
-        
-        // Добавляем настройки стиля
-        result += `<line-height=${lineHeight}><mspace=${mspace}><b><size=${fontSize}>`;
-        previewHtml += `<div style="line-height:${lineHeight}; letter-spacing:${mspace}; font-size:${fontSize}px; font-family: 'Courier New', monospace; font-weight: bold;">`;
+        // Генерируем текст изображения
+        let imageText = `<line-height=${lineHeight}><mspace=${mspace}><size=${fontSize}>`;
+        let previewHtml = `<div style="line-height:${lineHeight}; letter-spacing:${mspace}; font-size:${fontSize}px;">`;
         
         // Обрабатываем каждый пиксель
         for (let y = 0; y < canvas.height; y++) {
@@ -464,16 +471,18 @@ function initConverterTab() {
                 previewLine += `<span style="color: #${hexColor};">${charType}</span>`;
             }
             
-            result += line + '\n';
+            imageText += line + '\n';
             previewLine += '</div>';
             previewHtml += previewLine;
         }
         
-        // Закрываем теги
-        result += `</b></color></size>`;
+        imageText += `</size></mspace></line-height>`;
         previewHtml += '</div>';
         
-        outputText.value = result;
+        // Формируем полный код RPItem
+        const rpItemCode = `rpi g ${playerId} ${itemId} ${posX} ${posY} ${posZ} ${time}\n${itemText}\n\n${imageText}`;
+        
+        outputText.value = rpItemCode;
         textPreview.innerHTML = previewHtml;
     });
     
@@ -501,7 +510,7 @@ function initConverterTab() {
         
         outputText.select();
         document.execCommand('copy');
-        showToast('Код скопирован в буфер обмена');
+        showToast('Код RPItem скопирован в буфер обмена');
     });
 }
 

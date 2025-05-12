@@ -1047,11 +1047,13 @@ body {
     text-align: center;
     margin: 20px 0;
 }
-/* Стили для конвертера изображений */
+/* Стили для конвертера изображений в RPItem */
 .converter-container {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .settings-row {
@@ -1100,14 +1102,26 @@ body {
 
 .copy-btn {
     background-color: var(--success-color);
+    margin-top: 15px;
 }
 
 .copy-btn:hover {
     background-color: #1a8c1a;
 }
 
+.input-section, .settings-section, .image-settings-section, .output-section {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
 @media (max-width: 768px) {
     .preview-container {
         flex-direction: column;
+    }
+    
+    .settings-group {
+        min-width: 100%;
     }
 }
