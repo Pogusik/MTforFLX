@@ -405,6 +405,38 @@ function initConverterTab() {
         reader.readAsDataURL(file);
     });
     
+    // Счётчики символов
+    const itemText = document.getElementById('itemText');
+    const itemTextCounter = document.getElementById('itemTextCounter');
+    const previewCounter = document.getElementById('previewCounter');
+    const outputCounter = document.getElementById('outputCounter');
+    
+    itemText.addEventListener('input', updateCharCounters);
+    outputText.addEventListener('input', updateCharCounters);
+    
+    function updateCharCounters() {
+        // Текст предмета
+        const itemTextLength = itemText.value.length;
+        itemTextCounter.textContent = itemTextLength;
+        itemTextCounter.className = itemTextLength > 240 ? 'error' : 
+                                   itemTextLength > 200 ? 'warning' : '';
+        
+        // Превью и вывод
+        const previewText = textPreview.textContent;
+        const outputTextValue = outputText.value;
+        
+        const previewLength = previewText.length;
+        const outputLength = outputTextValue.length;
+        
+        previewCounter.textContent = previewLength;
+        previewCounter.className = previewLength > 1900 ? 'error' : 
+                                  previewLength > 1500 ? 'warning' : '';
+        
+        outputCounter.textContent = outputLength;
+        outputCounter.className = outputLength > 1900 ? 'error' : 
+                                  outputLength > 1500 ? 'warning' : '';
+    }
+    
     // Обработчик конвертации
     convertBtn.addEventListener('click', function() {
         if (!uploadedImage) {
@@ -419,7 +451,7 @@ function initConverterTab() {
         const posY = document.getElementById('posY').value;
         const posZ = document.getElementById('posZ').value;
         const time = document.getElementById('time').value;
-        const itemText = document.getElementById('itemText').value;
+        const itemTextValue = document.getElementById('itemText').value;
         
         // Получаем параметры текста
         const fontSize = document.getElementById('fontSize').value;
@@ -480,13 +512,16 @@ function initConverterTab() {
         previewHtml += '</div>';
         
         // Формируем полный код RPItem
-        const rpItemCode = `rpi g ${playerId} ${itemId} ${posX} ${posY} ${posZ} ${time}\n${itemText}\n\n${imageText}`;
+        const rpItemCode = `rpi g ${playerId} ${itemId} ${posX} ${posY} ${posZ} ${time}\n${itemTextValue}\n\n${imageText}`;
         
-        outputText.value = rpItemCode;
+        // Обрезаем если превышен лимит
+        outputText.value = rpItemCode.substring(0, 2000);
         textPreview.innerHTML = previewHtml;
+        
+        updateCharCounters();
     });
     
-    // Функция преобразования RGB в HEX с уменьшенной точностью
+    // Функция преобразования RGB в HEX
     function rgbToHex(r, g, b, precision) {
         const factor = Math.pow(2, 8 - precision);
         r = Math.floor(r / factor) * factor;
@@ -494,7 +529,7 @@ function initConverterTab() {
         b = Math.floor(b / factor) * factor;
         
         const toHex = (c) => {
-            const hex = c.toString(16);
+            const hex = c.toString(16).padStart(2, '0');
             return hex.length === 1 ? '0' + hex : hex;
         };
         
@@ -512,7 +547,47 @@ function initConverterTab() {
         document.execCommand('copy');
         showToast('Код RPItem скопирован в буфер обмена');
     });
+    
+    // Инициализация выпадающего списка
+    const defaultItem = document.querySelector('.item');
+    if (defaultItem) {
+        defaultItem.click();
+    }
+    
+    // Инициализация счётчиков
+    updateCharCounters();
 }
+
+// Функции для работы выпадающего списка
+function toggleDropdown() {
+    const dropdown = document.getElementById('itemDropdown');
+    const header = document.querySelector('.select-header');
+    dropdown.classList.toggle('show');
+    header.classList.toggle('active');
+}
+
+function selectItem(name, id, scale) {
+    document.getElementById('selectedItem').textContent = `«${name}» (ID: ${id || 'Нет'})`;
+    document.getElementById('itemId').value = id;
+    toggleDropdown();
+    
+    // Автоматически обновляем текст предмета если он стандартный
+    const itemText = document.getElementById('itemText');
+    if (itemText.value.includes('Потёртая фотография')) {
+        itemText.value = itemText.value.replace('Потёртая фотография', name);
+        itemText.dispatchEvent(new Event('input'));
+    }
+}
+
+// Закрытие выпадающего списка при клике вне его
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('itemDropdown');
+    const header = document.querySelector('.select-header');
+    if (!e.target.closest('.custom-select') && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        header.classList.remove('active');
+    }
+});
 
 function initTabScripts(tabId) {
     document.querySelectorAll('.tab-icon').forEach(icon => {
