@@ -1,0 +1,296 @@
+<div class="converter-container">
+    <div class="scp-panel">
+        <h2 class="scp-panel-title">ГЕНЕРАТОР КЛЮЧ-КАРТ</h2>
+        
+        <div class="settings-section">
+            <h3 class="section-title">ОСНОВНЫЕ НАСТРОЙКИ</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="keycard-type" class="required">Тип ключ-карты</label>
+                    <select id="keycard-type" class="scp-input">
+                        <option value="KeycardCustomSite02">Стандартная</option>
+                        <option value="keycardcustommanagement">Административная</option>
+                        <option value="keycardcustomtaskforce">Оперативника</option>
+                        <option value="KeycardCustomMetalCase">Металлический кейс</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label for="player-id" class="required">ID игрока</label>
+                    <input type="text" id="player-id" class="scp-input" placeholder="1" maxlength="5">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="inventory-name" class="required">Название в инвентаре</label>
+                    <input type="text" id="inventory-name" class="scp-input" placeholder="Karta" value="Karta">
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">ИНФОРМАЦИЯ НА КАРТЕ</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="label-name">Название ярлыка (используйте _ вместо пробелов)</label>
+                    <input type="text" id="label-name" class="scp-input" placeholder="Ключ-карта" value="Ключ-карта">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="holder-name">Имя держателя карты</label>
+                    <input type="text" id="holder-name" class="scp-input" placeholder="Никнейм" value="Никнейм">
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section" id="serial-section">
+            <h3 class="section-title">ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label for="serial-number">Серийный номер (введите X для случайного)</label>
+                    <input type="text" id="serial-number" class="scp-input" placeholder="69420 или X" value="69420">
+                </div>
+                
+                <div class="settings-group">
+                    <label for="circle-count">Индекс кружков (0-3)</label>
+                    <select id="circle-count" class="scp-input">
+                        <option value="0">0 (нет кружков)</option>
+                        <option value="1" selected>1 (3 кружка)</option>
+                        <option value="2">2 (2 кружка)</option>
+                        <option value="3">3 (1 кружок)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">УРОВНИ ДОСТУПА</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>SCP доступ <span class="scp-class keter">КЕТЕР</span></label>
+                    <select id="scp-access" class="scp-input">
+                        <option value="0">0 (Нет доступа)</option>
+                        <option value="1">1 (Безопасный)</option>
+                        <option value="2">2 (Евклид)</option>
+                        <option value="3" selected>3 (Кетер)</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label>Оружейная <span class="scp-class euclid">ЕВКЛИД</span></label>
+                    <select id="weapon-access" class="scp-input">
+                        <option value="0">0 (Нож)</option>
+                        <option value="1">1 (Пистолет)</option>
+                        <option value="2" selected>2 (Автомат)</option>
+                        <option value="3">3 (Micro HID)</option>
+                    </select>
+                </div>
+                
+                <div class="settings-group">
+                    <label>Администрация <span class="scp-class safe">БЕЗОПАСНЫЙ</span></label>
+                    <select id="admin-access" class="scp-input">
+                        <option value="0">0 (Туалет)</option>
+                        <option value="1" selected>1 (КПП)</option>
+                        <option value="2">2 (Гермоворота)</option>
+                        <option value="3">3 (Каб. Директора)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title">ВНЕШНИЙ ВИД</h3>
+            
+            <div class="settings-row">
+                <div class="settings-group">
+                    <label>Цвет кружков</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="circle-color-picker" value="#cc9600">
+                        <input type="text" id="circle-hex-code" class="scp-input" placeholder="#cc9600" value="#cc9600">
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <label>Цвет обводки</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="border-color-picker" value="#5c5c5c">
+                        <input type="text" id="border-hex-code" class="scp-input" placeholder="#5c5c5c" value="#5c5c5c">
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <label>Цвет ярлыка</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="label-color-picker" value="#9ffeaa">
+                        <input type="text" id="label-hex-code" class="scp-input" placeholder="#9ffeaa" value="#9ffeaa">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-row" style="justify-content: center;">
+                <div class="keycard-preview" id="keycard-preview">
+                    <div class="preview-dots" id="preview-dots">
+                        <div class="preview-dot" id="dot-1"></div>
+                        <div class="preview-dot" id="dot-2"></div>
+                        <div class="preview-dot" id="dot-3"></div>
+                    </div>
+                    <div class="preview-label">Ключ-карта</div>
+                    <div class="preview-name">Никнейм</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button id="btn-generate" class="scp-button">
+                <i class="fas fa-cog"></i> Сгенерировать
+            </button>
+            <button id="btn-copy" class="scp-button">
+                <i class="far fa-copy"></i> Скопировать
+            </button>
+        </div>
+        
+        <div class="output-section">
+            <h3>КОМАНДА ДЛЯ КОНСОЛИ</h3>
+            <div class="preview-output" id="output-box"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-title {
+        color: var(--accent-color);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+    
+    .scp-class {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-weight: bold;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    
+    .safe { background-color: var(--success-color); color: white; }
+    .euclid { background-color: var(--warning-color); color: white; }
+    .keter { background-color: var(--error-color); color: white; }
+    
+    .keycard-preview {
+        width: 200px;
+        height: 120px;
+        background-color: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+        margin: 15px auto;
+    }
+    
+    .keycard-preview::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 30px;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .preview-dots {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .preview-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .preview-dot.visible {
+        opacity: 1;
+    }
+    
+    .preview-label {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        font-size: 10px;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+    
+    .preview-name {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        font-size: 14px;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .color-picker-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .color-picker-group input[type="color"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 0;
+        background: transparent;
+    }
+    
+    .color-picker-group input[type="color"]::-webkit-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+    
+    .color-picker-group input[type="color"]::-moz-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+    
+    .required::after {
+        content: " *";
+        color: var(--error-color);
+    }
+    
+    .output-section {
+        margin-top: 20px;
+    }
+    
+    .output-section h3 {
+        margin-bottom: 10px;
+        color: var(--accent-color);
+        font-size: 14px;
+    }
+</style>
+
+<script>
+// Перенесите весь JavaScript из оригинального kcard.html сюда
+// Убедитесь, что все функции и обработчики событий сохранены
+// Обновите селекторы элементов, если это необходимо
+</script>

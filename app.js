@@ -1,22 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Загружаем первую вкладку по умолчанию
-    loadTab('cassie');
-    
-    // Обработчики для кнопок вкладок
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
-            loadTab(tabId);
-            
-            // Обновляем активную кнопку
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-    
-    // Проверка обновлений каждые 5 минут
-    setInterval(checkForUpdates, 300000);
-});
+
 
 async function loadTab(tabId) {
     const contentDiv = document.getElementById('tab-content');
@@ -59,15 +41,44 @@ async function loadTab(tabId) {
     }
 }
 
-function initTabScripts(tabId) {
-    document.querySelectorAll('.tab-icon').forEach(icon => {
-        icon.style.color = '#ccc';
+document.addEventListener('DOMContentLoaded', function() {
+    // Загружаем первую вкладку по умолчанию
+    loadTab('cassie');
+    
+    // Обработчики для кнопок вкладок
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            loadTab(tabId);
+            
+            // Обновляем активную кнопку и иконку
+            updateActiveTab(this);
+        });
     });
     
-    const activeIcon = document.querySelector(`.tab-btn.active .tab-icon`);
-    if (activeIcon) {
-        activeIcon.style.color = 'var(--accent-color)';
-    }
+    // Проверка обновлений каждые 5 минут
+    setInterval(checkForUpdates, 300000);
+});
+
+function updateActiveTab(activeBtn) {
+    // Сбрасываем все кнопки и иконки
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        const icon = b.querySelector('.tab-icon');
+        if (icon) icon.style.color = '#ccc';
+    });
+    
+    // Устанавливаем активное состояние для выбранной кнопки
+    activeBtn.classList.add('active');
+    const activeIcon = activeBtn.querySelector('.tab-icon');
+    if (activeIcon) activeIcon.style.color = 'var(--accent-color)';
+}
+
+function initTabScripts(tabId) {
+    // Обновляем активную вкладку (на случай, если функция вызывается отдельно)
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (activeBtn) updateActiveTab(activeBtn);
+    
     // Здесь можно добавить инициализацию специфичных для вкладки скриптов
     console.log(`Инициализация скриптов для вкладки: ${tabId}`);
     
@@ -81,7 +92,15 @@ function initTabScripts(tabId) {
         case 'cassie-editor':
             initEditorTab();
             break;
-        // Добавьте другие вкладки по мере необходимости
+        case 'rpitem':
+            initRPTab();
+            break;
+        case 'converter':
+            initConverterTab();
+            break;
+        case 'kcard':
+            initKCardTab();
+            break;
     }
 }
 // Функции для настроек
@@ -583,40 +602,13 @@ function selectItem(name, id, scale) {
 document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('itemDropdown');
     const header = document.querySelector('.select-header');
-    if (!e.target.closest('.custom-select') && dropdown.classList.contains('show')) {
+    
+    if (dropdown && header && !e.target.closest('.custom-select') && dropdown.classList.contains('show')) {
         dropdown.classList.remove('show');
         header.classList.remove('active');
     }
 });
 
-function initTabScripts(tabId) {
-    document.querySelectorAll('.tab-icon').forEach(icon => {
-        icon.style.color = '#ccc';
-    });
-    
-    const activeIcon = document.querySelector(`.tab-btn.active .tab-icon`);
-    if (activeIcon) {
-        activeIcon.style.color = 'var(--accent-color)';
-    }
-    
-    switch(tabId) {
-        case 'settings':
-            initSettingsTab();
-            break;
-        case 'cassie':
-            initCassieTab();
-            break;
-        case 'cassie-editor':
-            initEditorTab();
-            break;
-        case 'rpitem':
-            initRPTab();
-            break;
-        case 'converter':
-            initConverterTab();
-            break;
-    }
-}
 
 
 function changeTheme(themeName) {
@@ -932,6 +924,192 @@ function renderPresets(presets) {
     });
 }
 
+// K-card codeeeeeeeeeeeeeee
+
+
+function initKCardTab() {
+    // Сохранение данных в localStorage
+    const saveData = () => {
+        const inputs = document.querySelectorAll('#tab-content input, #tab-content select');
+        inputs.forEach(input => {
+            if (input.type !== 'color') {
+                localStorage.setItem(input.id, input.value);
+            }
+        });
+    };
+
+    // Загрузка данных из localStorage
+const loadData = () => {
+    const inputs = document.querySelectorAll('#tab-content input, #tab-content select');
+    inputs.forEach(input => {
+        if (input && input.type !== 'color') { // Добавлена проверка на input
+            const savedValue = localStorage.getItem(input.id);
+            if (savedValue !== null) {
+                input.value = savedValue;
+                // Триггерим событие change для цветов
+                if (input.id.includes('hex-code')) {
+                    const colorPickerId = input.id.replace('-hex-code', '-picker');
+                    const picker = document.getElementById(colorPickerId);
+                    if (picker) { // Добавлена проверка на существование picker
+                        picker.value = savedValue;
+                    }
+                }
+            }
+        }
+    });
+    updateVisibility();
+};
+    // Генерация случайного серийного номера
+    const generateSerialNumber = () => {
+        return Math.floor(1000000000 + Math.random() * 9000000000).toString().slice(0, 10);
+    };
+
+    // Обновление видимости полей в зависимости от типа карты
+    const updateVisibility = () => {
+        const type = document.getElementById('keycard-type').value;
+        const serialCircleRow = document.getElementById('serial-circle-row');
+        const serialInput = document.getElementById('serial-number');
+        
+        if (type === 'обычная' || type === 'админская') {
+            serialCircleRow.style.display = 'none';
+        } else {
+            serialCircleRow.style.display = 'flex';
+            if (!serialInput.value) {
+                serialInput.value = generateSerialNumber();
+            }
+        }
+
+        // Автоматическая установка цветов по типу карты
+        setDefaultColors(type);
+    };
+
+    // Установка цветов по умолчанию в зависимости от типа карты
+    const setDefaultColors = (type) => {
+        const colors = {
+            'обычная': { circle: '#008000', border: '#008000', label: '#008000' },
+            'админская': { circle: '#ff0000', border: '#ff0000', label: '#ff0000' },
+            'оперативника': { circle: '#0000ff', border: '#0000ff', label: '#ffffff' },
+            'металлическая': { circle: '#ffa500', border: '#ffa500', label: '#000000' }
+        };
+
+        if (colors[type]) {
+            document.getElementById('circle-color-picker').value = colors[type].circle;
+            document.getElementById('circle-hex-code').value = colors[type].circle;
+            document.getElementById('border-color-picker').value = colors[type].border;
+            document.getElementById('border-hex-code').value = colors[type].border;
+            document.getElementById('label-color-picker').value = colors[type].label;
+            document.getElementById('label-hex-code').value = colors[type].label;
+        }
+    };
+
+    // Синхронизация цветовых полей
+    const syncColorInputs = (pickerId, hexId) => {
+        const picker = document.getElementById(pickerId);
+        const hexInput = document.getElementById(hexId);
+
+        // Установка начальных значений
+        hexInput.value = picker.value;
+
+        picker.addEventListener('input', () => {
+            hexInput.value = picker.value;
+        });
+
+        hexInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (/^#[0-9A-Fa-f]{6}$/i.test(value)) {
+                picker.value = value;
+            }
+        });
+    };
+
+    // Инициализация синхронизации для всех цветовых полей
+    syncColorInputs('circle-color-picker', 'circle-hex-code');
+    syncColorInputs('border-color-picker', 'border-hex-code');
+    syncColorInputs('label-color-picker', 'label-hex-code');
+
+    
+    document.getElementById('keycard-type').addEventListener('change', updateVisibility);
+    document.getElementById('serial-number').addEventListener('focus', function() {
+        if (!this.value) {
+            this.value = generateSerialNumber();
+        }
+    });
+
+    // Генерация команды
+    document.getElementById('btn-generate').addEventListener('click', () => {
+        const type = document.getElementById('keycard-type').value;
+        const idPlayer = document.getElementById('player-id').value.trim();
+        const inventoryName = document.getElementById('inventory-name').value.trim().replace(/\s+/g, '_');
+        const position = document.getElementById('position').value.trim().replace(/\s+/g, '_');
+        const keycardName = document.getElementById('keycard-name').value.trim().replace(/\s+/g, '_');
+        const scpAccess = document.getElementById('scp-access').value;
+        const weaponAccess = document.getElementById('weapon-access').value;
+        const adminAccess = document.getElementById('admin-access').value;
+        const circleColor = document.getElementById('circle-hex-code').value.toUpperCase();
+        const borderColor = document.getElementById('border-hex-code').value.toUpperCase();
+        const labelColor = document.getElementById('label-hex-code').value.toUpperCase();
+        const serialNumber = document.getElementById('serial-number').value.trim();
+        const circleCount = document.getElementById('circle-count').value;
+
+        // Валидация
+        if (!idPlayer || !/^\d{1,5}$/.test(idPlayer)) {
+            showToast('Введите корректный ID игрока (1-5 цифр)');
+            return;
+        }
+        if (!inventoryName) {
+            showToast('Введите название в инвентаре');
+            return;
+        }
+        if (!keycardName) {
+            showToast('Введите имя на ключ-карте');
+            return;
+        }
+
+        let command = '';
+        const circleCountMap = { '0': '0', '1': '3', '2': '2', '3': '1' };
+
+        switch (type) {
+            case 'обычная':
+                command = `ckeycard ${idPlayer} KeycardCustomSite02 ${inventoryName} ${scpAccess} ${weaponAccess} ${adminAccess} ${circleColor} ${borderColor} ${position} ${labelColor} ${keycardName} 1`;
+                break;
+            case 'админская':
+                command = `ckeycard ${idPlayer} keycardcustommanagement ${inventoryName} ${scpAccess} ${weaponAccess} ${adminAccess} ${circleColor} ${borderColor} ${position} ${labelColor} ${keycardName} 1`;
+                break;
+            case 'металлическая':
+                if (!serialNumber) {
+                    showToast('Введите серийный номер');
+                    return;
+                }
+                command = `ckeycard ${idPlayer} KeycardCustomMetalCase ${inventoryName} ${scpAccess} ${weaponAccess} ${adminAccess} ${circleColor} ${borderColor} ${position} ${labelColor} ${keycardName} ${serialNumber}1`;
+                break;
+            case 'оперативника':
+                if (!serialNumber) {
+                    showToast('Введите серийный номер');
+                    return;
+                }
+                command = `ckeycard ${idPlayer} keycardcustomtaskforce ${inventoryName} ${scpAccess} ${weaponAccess} ${adminAccess} ${circleColor} ${borderColor} ${keycardName} ${serialNumber} ${circleCountMap[circleCount] || '0'}`;
+                break;
+            default:
+                command = 'Неизвестный тип ключ-карты';
+        }
+
+        document.getElementById('output-box').textContent = command;
+        saveData();
+    });
+
+    // Копирование в буфер обмена
+    document.getElementById('btn-copy').addEventListener('click', () => {
+        const output = document.getElementById('output-box').textContent;
+        if (!output) {
+            showToast('Сначала сгенерируйте команду');
+            return;
+        }
+        copyToClipboard(output);
+    });
+
+    // Загрузка сохраненных данных
+    loadData();
+}
 
 
 

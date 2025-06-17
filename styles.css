@@ -403,36 +403,43 @@ body {
 .gray-theme {
     --primary-color: #424242;
     --accent-color: #616161;
+    
 }
 
 .yellow-theme {
     --primary-color: #77663d;
     --accent-color: #e2d1a8;
+    --success-color: #005205;
 }
 
 .mint-theme {
     --primary-color: #57917c;
-    --accent-color: #c0e9da;
+    --accent-color: #6cb49b;
+    --success-color: #005205;
 }
 
 .red-theme {
     --primary-color: #921212;
     --accent-color: #d85656;
+    --success-color: #72e67a;
 }
 
 .green-theme {
     --primary-color: #1b5e20;
     --accent-color: #2e7d32;
+    --success-color: #72e67a;
 }
 
 .purple-theme {
     --primary-color: #552b5e;
     --accent-color: #9f77a7;
+    --success-color: #72e67a;
 }
 
 .blue-theme {
     --primary-color: #1b355c;
     --accent-color: #436c9b;
+    --success-color: #72e67a;
 }
 
 /* Основные стили */
@@ -1101,7 +1108,7 @@ body {
 }
 
 .copy-btn {
-    background-color: var(--success-color);
+    background-color: var(--accent-color);
     margin-top: 15px;
 }
 
@@ -1286,4 +1293,91 @@ body {
     .settings-group {
         min-width: 100%;
     }
+}
+/* K-Card Generator Styles */
+.color-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker-group input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.settings-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.settings-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.settings-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--accent-color);
+}
+
+.required::after {
+    content: " *";
+    color: var(--error-color);
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .settings-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .settings-group {
+        min-width: 100%;
+    }
+    .btn-group {
+        flex-direction: column;
+    }
+}
+.color-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker-group input[type="color"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+}
+
+.color-picker-group input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+.color-picker-group input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 4px;
 }
