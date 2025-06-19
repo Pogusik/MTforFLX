@@ -288,343 +288,342 @@
         font-size: 14px;
     }
     .input-section, .settings-section, .image-settings-section, .output-section {
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 9px;
-}
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 9px;
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Элементы DOM
-      const keycardType = document.getElementById('keycard-type');
-      const playerId = document.getElementById('player-id');
-      const inventoryName = document.getElementById('inventory-name');
-      const labelName = document.getElementById('label-name');
-      const holderName = document.getElementById('holder-name');
-      const serialNumber = document.getElementById('serial-number');
-      const circleCount = document.getElementById('circle-count');
-      const scpAccess = document.getElementById('scp-access');
-      const weaponAccess = document.getElementById('weapon-access');
-      const adminAccess = document.getElementById('admin-access');
-      const circleColorPicker = document.getElementById('circle-color-picker');
-      const circleHexCode = document.getElementById('circle-hex-code');
-      const borderColorPicker = document.getElementById('border-color-picker');
-      const borderHexCode = document.getElementById('border-hex-code');
-      const labelColorPicker = document.getElementById('label-color-picker');
-      const labelHexCode = document.getElementById('label-hex-code');
-      const btnGenerate = document.getElementById('btn-generate');
-      const btnCopy = document.getElementById('btn-copy');
-      const outputBox = document.getElementById('output-box');
-      const serialSection = document.getElementById('serial-section');
-      const keycardPreview = document.getElementById('keycard-preview');
-      const previewDots = document.getElementById('preview-dots');
-      const dot1 = document.getElementById('dot-1');
-      const dot2 = document.getElementById('dot-2');
-      const dot3 = document.getElementById('dot-3');
-      const previewLabel = keycardPreview.querySelector('.preview-label');
-      const previewName = keycardPreview.querySelector('.preview-name');
+        // Элементы DOM
+        const keycardType = document.getElementById('keycard-type');
+        const playerId = document.getElementById('player-id');
+        const inventoryName = document.getElementById('inventory-name');
+        const labelName = document.getElementById('label-name');
+        const holderName = document.getElementById('holder-name');
+        const serialNumber = document.getElementById('serial-number');
+        const circleCount = document.getElementById('circle-count');
+        const scpAccess = document.getElementById('scp-access');
+        const weaponAccess = document.getElementById('weapon-access');
+        const adminAccess = document.getElementById('admin-access');
+        const circleColorPicker = document.getElementById('circle-color-picker');
+        const circleHexCode = document.getElementById('circle-hex-code');
+        const borderColorPicker = document.getElementById('border-color-picker');
+        const borderHexCode = document.getElementById('border-hex-code');
+        const labelColorPicker = document.getElementById('label-color-picker');
+        const labelHexCode = document.getElementById('label-hex-code');
+        const btnGenerate = document.getElementById('btn-generate');
+        const btnCopy = document.getElementById('btn-copy');
+        const outputBox = document.getElementById('output-box');
+        const keycardPreview = document.getElementById('keycard-preview');
+        const previewDots = document.getElementById('preview-dots');
+        const dot1 = document.getElementById('dot-1');
+        const dot2 = document.getElementById('dot-2');
+        const dot3 = document.getElementById('dot-3');
+        const previewLabel = keycardPreview.querySelector('.preview-label');
+        const previewName = keycardPreview.querySelector('.preview-name');
 
-      // Генерация случайного 12-значного номера
-      function generateRandomSerial() {
-        let result = '';
-        for (let i = 0; i < 12; i++) {
-          result += Math.floor(Math.random() * 10);
-        }
-        return result;
-      }
-
-      // Функция для замены пробелов на подчеркивания
-      function replaceSpaces(str) {
-        return str.replace(/\s+/g, '_');
-      }
-
-      // Инициализация
-      function init() {
-        loadFromLocalStorage();
-        setupColorPickers();
-        updateFieldVisibility();
-        updatePreview();
-        setupEventListeners();
-      }
-
-      // Настройка цветовых пикеров
-      function setupColorPickers() {
-        const syncColor = (picker, hexInput) => {
-          picker.addEventListener('input', () => {
-            hexInput.value = picker.value;
-            updatePreview();
-          });
-          
-          hexInput.addEventListener('input', () => {
-            if (isValidColor(hexInput.value)) {
-              picker.value = normalizeColor(hexInput.value);
-              updatePreview();
+        // Генерация случайного 12-значного номера
+        function generateRandomSerial() {
+            let result = '';
+            for (let i = 0; i < 12; i++) {
+                result += Math.floor(Math.random() * 10);
             }
-          });
-        };
-        
-        syncColor(circleColorPicker, circleHexCode);
-        syncColor(borderColorPicker, borderHexCode);
-        syncColor(labelColorPicker, labelHexCode);
-      }
-
-      // Проверка валидности цвета
-      function isValidColor(color) {
-        return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color) || 
-               /^[a-zA-Z]+$/.test(color) || 
-               /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color) ||
-               color.toLowerCase() === 'default';
-      }
-
-      // Нормализация цвета
-      function normalizeColor(color) {
-        if (color.toLowerCase() === 'default') {
-          return 'default';
+            return result;
         }
-        
-        if (/^[a-zA-Z]+$/.test(color)) {
-          const tempElement = document.createElement('div');
-          tempElement.style.color = color;
-          document.body.appendChild(tempElement);
-          const computedColor = window.getComputedStyle(tempElement).color;
-          document.body.removeChild(tempElement);
-          
-          if (computedColor.startsWith('rgb')) {
-            const rgb = computedColor.match(/\d+/g);
-            return rgbToHex(parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2]));
-          }
-          return computedColor;
-        } else if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
-          return color.length === 4 ? 
-            `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}` : 
-            color;
+
+        // Функция для замены пробелов на подчеркивания
+        function replaceSpaces(str) {
+            return str.replace(/\s+/g, '_');
         }
-        return '#000000';
-      }
 
-      // RGB в HEX
-      function rgbToHex(r, g, b) {
-        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-      }
-
-      // Обновление видимости полей
-      function updateFieldVisibility() {
-        const type = keycardType.value;
-		keycardPreview.setAttribute('data-type', type);
-        
-        if (type === 'keycardcustomtaskforce' || type === 'KeycardCustomMetalCase') {
-          serialSection.style.display = 'block';
-        } else {
-          serialSection.style.display = 'none';
-        }
-      }
-
-      // Обновление превью карты
-      function updatePreview() {
-        previewName.textContent = holderName.value || 'Никнейм';
-        previewLabel.textContent = labelName.value || 'Ключ-карта';
-        previewLabel.style.color = labelHexCode.value;
-        
-        const dotColor = circleHexCode.value;
-        dot1.style.backgroundColor = dotColor;
-        dot2.style.backgroundColor = dotColor;
-        dot3.style.backgroundColor = dotColor;
-        
-        const circlesIndex = parseInt(circleCount.value);
-        dot1.classList.remove('visible');
-        dot2.classList.remove('visible');
-        dot3.classList.remove('visible');
-        
-        if (circlesIndex === 1) {
-          dot1.classList.add('visible');
-          dot2.classList.add('visible');
-          dot3.classList.add('visible');
-        } else if (circlesIndex === 2) {
-          dot1.classList.add('visible');
-          dot2.classList.add('visible');
-        } else if (circlesIndex === 3) {
-          dot1.classList.add('visible');
-        }
-        
-        keycardPreview.style.backgroundColor = borderHexCode.value;
-        keycardPreview.style.borderColor = borderHexCode.value;
-      }
-
-      // Настройка слушателей событий
-      function setupEventListeners() {
-        keycardType.addEventListener('change', () => {
-          updateFieldVisibility();
-          updatePreview();
-          saveToLocalStorage();
-        });
-        
-        const textInputs = [playerId, inventoryName, labelName, holderName, serialNumber];
-        textInputs.forEach(input => {
-          input.addEventListener('input', () => {
+        // Инициализация
+        function init() {
+            loadFromLocalStorage();
+            setupColorPickers();
+            updateFieldVisibility();
             updatePreview();
-            saveToLocalStorage();
-          });
-        });
-        
-        const selects = [circleCount, scpAccess, weaponAccess, adminAccess];
-        selects.forEach(select => {
-          select.addEventListener('change', () => {
-            updatePreview();
-            saveToLocalStorage();
-          });
-        });
-        
-        btnGenerate.addEventListener('click', generateCommand);
-        btnCopy.addEventListener('click', copyToClipboard);
-      }
+            setupEventListeners();
+        }
 
-      // Генерация команды
-      function generateCommand() {
-        if (!playerId.value || !/^\d+$/.test(playerId.value)) {
-          alert('Пожалуйста, введите корректный ID игрока (только цифры)');
-          playerId.focus();
-          return;
-        }
-        
-        if (!inventoryName.value) {
-          alert('Пожалуйста, введите название в инвентаре');
-          inventoryName.focus();
-          return;
-        }
-        
-        const type = keycardType.value;
-        let command;
-        let serial = serialNumber.value;
-        
-        if (serial.toUpperCase() === 'X') {
-          serial = generateRandomSerial();
-        }
-        
-        const invName = replaceSpaces(inventoryName.value);
-        const lblName = replaceSpaces(labelName.value);
-        const hldName = replaceSpaces(holderName.value);
-        const permColor = circleHexCode.value.toLowerCase() === 'default' ? 'default' : circleHexCode.value;
-        const tintColor = borderHexCode.value;
-        const labelColor = labelHexCode.value;
-        
-        switch (type) {
-          case 'KeycardCustomSite02':
-            command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor} ${hldName} ${circleCount.value}`;
-            break;
+        // Настройка цветовых пикеров
+        function setupColorPickers() {
+            const syncColor = (picker, hexInput) => {
+                picker.addEventListener('input', () => {
+                    hexInput.value = picker.value;
+                    updatePreview();
+                });
+                
+                hexInput.addEventListener('input', () => {
+                    if (isValidColor(hexInput.value)) {
+                        picker.value = normalizeColor(hexInput.value);
+                        updatePreview();
+                    }
+                });
+            };
             
-          case 'keycardcustommanagement':
-            command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor}`;
-            break;
-            
-          case 'keycardcustomtaskforce':
-            if (!serial) {
-              alert('Пожалуйста, введите серийный номер');
-              serialNumber.focus();
-              return;
+            syncColor(circleColorPicker, circleHexCode);
+            syncColor(borderColorPicker, borderHexCode);
+            syncColor(labelColorPicker, labelHexCode);
+        }
+
+        // Проверка валидности цвета
+        function isValidColor(color) {
+            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color) || 
+                   /^[a-zA-Z]+$/.test(color) || 
+                   /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color) ||
+                   color.toLowerCase() === 'default';
+        }
+
+        // Нормализация цвета
+        function normalizeColor(color) {
+            if (color.toLowerCase() === 'default') {
+                return 'default';
             }
-            command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${hldName} ${serial} ${circleCount.value}`;
-            break;
             
-          case 'KeycardCustomMetalCase':
-            if (!serial) {
-              alert('Пожалуйста, введите серийный номер');
-              serialNumber.focus();
-              return;
-            }
-            command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor} ${hldName} ${serial} ${circleCount.value}`;
-            break;
-            
-          default:
-            command = 'Неизвестный тип ключ-карты';
-        }
-        
-        outputBox.textContent = command;
-        saveToLocalStorage();
-      }
-
-      // Копирование в буфер обмена
-      function copyToClipboard() {
-        if (!outputBox.textContent) {
-          alert('Сначала сгенерируйте команду');
-          return;
-        }
-        
-        navigator.clipboard.writeText(outputBox.textContent).then(() => {
-          btnCopy.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px;">
-              <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
-            </svg>
-            Скопировано!
-          `;
-          
-          setTimeout(() => {
-            btnCopy.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px;">
-                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-              </svg>
-              Скопировать
-            `;
-          }, 2000);
-        }).catch(err => {
-          console.error('Ошибка копирования: ', err);
-          alert('Не удалось скопировать команду');
-        });
-      }
-
-      // Сохранение в LocalStorage
-      function saveToLocalStorage() {
-        const inputs = [
-          'keycard-type', 'player-id', 'inventory-name', 'label-name', 
-          'holder-name', 'serial-number', 'circle-count', 'scp-access', 
-          'weapon-access', 'admin-access', 'circle-hex-code', 
-          'border-hex-code', 'label-hex-code'
-        ];
-        
-        inputs.forEach(id => {
-          const element = document.getElementById(id);
-          if (element) {
-            localStorage.setItem(`scp-keycard-${id}`, element.value);
-          }
-        });
-      }
-
-      // Загрузка из LocalStorage
-      function loadFromLocalStorage() {
-	  const currentType = keycardType.value;
-keycardPreview.setAttribute('data-type', currentType);
-        const inputs = [
-          'keycard-type', 'player-id', 'inventory-name', 'label-name', 
-          'holder-name', 'serial-number', 'circle-count', 'scp-access', 
-          'weapon-access', 'admin-access', 'circle-hex-code', 
-          'border-hex-code', 'label-hex-code'
-        ];
-        
-        inputs.forEach(id => {
-          const savedValue = localStorage.getItem(`scp-keycard-${id}`);
-          if (savedValue !== null) {
-            const element = document.getElementById(id);
-            if (element) {
-              element.value = savedValue;
-              
-              if (id.includes('hex-code')) {
-                const pickerId = id.replace('-hex-code', '-picker');
-                const picker = document.getElementById(pickerId);
-                if (picker && isValidColor(savedValue)) {
-                  picker.value = normalizeColor(savedValue);
+            if (/^[a-zA-Z]+$/.test(color)) {
+                const tempElement = document.createElement('div');
+                tempElement.style.color = color;
+                document.body.appendChild(tempElement);
+                const computedColor = window.getComputedStyle(tempElement).color;
+                document.body.removeChild(tempElement);
+                
+                if (computedColor.startsWith('rgb')) {
+                    const rgb = computedColor.match(/\d+/g);
+                    return rgbToHex(parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2]));
                 }
-              }
+                return computedColor;
+            } else if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
+                return color.length === 4 ? 
+                    `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}` : 
+                    color;
             }
-          }
-        });
-		
-      }
+            return '#000000';
+        }
 
-      // Инициализация при загрузке
-      init();
+        // RGB в HEX
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        // Обновление видимости полей
+        function updateFieldVisibility() {
+            const type = keycardType.value;
+            const serialSection = document.getElementById('serial-section');
+            if (serialSection) {
+                if (type === 'keycardcustomtaskforce' || type === 'KeycardCustomMetalCase') {
+                    serialSection.style.display = 'block';
+                } else {
+                    serialSection.style.display = 'none';
+                }
+            }
+            keycardPreview.setAttribute('data-type', type);
+        }
+
+        // Обновление превью карты
+        function updatePreview() {
+            previewName.textContent = holderName.value || 'Никнейм';
+            previewLabel.textContent = labelName.value || 'Ключ-карта';
+            previewLabel.style.color = labelHexCode.value;
+            
+            const dotColor = circleHexCode.value;
+            dot1.style.backgroundColor = dotColor;
+            dot2.style.backgroundColor = dotColor;
+            dot3.style.backgroundColor = dotColor;
+            
+            const circlesIndex = parseInt(circleCount.value);
+            dot1.classList.remove('visible');
+            dot2.classList.remove('visible');
+            dot3.classList.remove('visible');
+            
+            if (circlesIndex === 1) {
+                dot1.classList.add('visible');
+                dot2.classList.add('visible');
+                dot3.classList.add('visible');
+            } else if (circlesIndex === 2) {
+                dot1.classList.add('visible');
+                dot2.classList.add('visible');
+            } else if (circlesIndex === 3) {
+                dot1.classList.add('visible');
+            }
+            
+            keycardPreview.style.backgroundColor = borderHexCode.value;
+            keycardPreview.style.borderColor = borderHexCode.value;
+        }
+
+        // Настройка слушателей событий
+        function setupEventListeners() {
+            keycardType.addEventListener('change', () => {
+                updateFieldVisibility();
+                updatePreview();
+                saveToLocalStorage();
+            });
+            
+            const textInputs = [playerId, inventoryName, labelName, holderName, serialNumber];
+            textInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    updatePreview();
+                    saveToLocalStorage();
+                });
+            });
+            
+            const selects = [circleCount, scpAccess, weaponAccess, adminAccess];
+            selects.forEach(select => {
+                select.addEventListener('change', () => {
+                    updatePreview();
+                    saveToLocalStorage();
+                });
+            });
+            
+            btnGenerate.addEventListener('click', generateCommand);
+            btnCopy.addEventListener('click', copyToClipboard);
+        }
+
+        // Генерация команды
+        function generateCommand() {
+            if (!playerId.value || !/^\d+$/.test(playerId.value)) {
+                alert('Пожалуйста, введите корректный ID игрока (только цифры)');
+                playerId.focus();
+                return;
+            }
+            
+            if (!inventoryName.value) {
+                alert('Пожалуйста, введите название в инвентаре');
+                inventoryName.focus();
+                return;
+            }
+            
+            const type = keycardType.value;
+            let command;
+            let serial = serialNumber.value;
+            
+            if (serial.toUpperCase() === 'X') {
+                serial = generateRandomSerial();
+            }
+            
+            const invName = replaceSpaces(inventoryName.value);
+            const lblName = replaceSpaces(labelName.value);
+            const hldName = replaceSpaces(holderName.value);
+            const permColor = circleHexCode.value.toLowerCase() === 'default' ? 'default' : circleHexCode.value;
+            const tintColor = borderHexCode.value;
+            const labelColor = labelHexCode.value;
+            
+            switch (type) {
+                case 'KeycardCustomSite02':
+                    command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor} ${hldName} ${circleCount.value}`;
+                    break;
+                    
+                case 'keycardcustommanagement':
+                    command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor}`;
+                    break;
+                    
+                case 'keycardcustomtaskforce':
+                    if (!serial) {
+                        alert('Пожалуйста, введите серийный номер');
+                        serialNumber.focus();
+                        return;
+                    }
+                    command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${hldName} ${serial} ${circleCount.value}`;
+                    break;
+                    
+                case 'KeycardCustomMetalCase':
+                    if (!serial) {
+                        alert('Пожалуйста, введите серийный номер');
+                        serialNumber.focus();
+                        return;
+                    }
+                    command = `ckeycard ${playerId.value} ${type} ${invName} ${scpAccess.value} ${weaponAccess.value} ${adminAccess.value} ${permColor} ${tintColor} ${lblName} ${labelColor} ${hldName} ${serial} ${circleCount.value}`;
+                    break;
+                    
+                default:
+                    command = 'Неизвестный тип ключ-карты';
+            }
+            
+            outputBox.textContent = command;
+            saveToLocalStorage();
+        }
+
+        // Копирование в буфер обмена
+        function copyToClipboard() {
+            if (!outputBox.textContent) {
+                alert('Сначала сгенерируйте команду');
+                return;
+            }
+            
+            navigator.clipboard.writeText(outputBox.textContent).then(() => {
+                btnCopy.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px;">
+                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                    </svg>
+                    Скопировано!
+                `;
+                
+                setTimeout(() => {
+                    btnCopy.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 5px;">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                        </svg>
+                        Скопировать
+                    `;
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+                alert('Не удалось скопировать команду');
+            });
+        }
+
+        // Сохранение в LocalStorage
+        function saveToLocalStorage() {
+            const inputs = [
+                'keycard-type', 'player-id', 'inventory-name', 'label-name', 
+                'holder-name', 'serial-number', 'circle-count', 'scp-access', 
+                'weapon-access', 'admin-access', 'circle-hex-code', 
+                'border-hex-code', 'label-hex-code'
+            ];
+            
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    localStorage.setItem(`scp-keycard-${id}`, element.value);
+                }
+            });
+        }
+
+        // Загрузка из LocalStorage
+        function loadFromLocalStorage() {
+            const currentType = keycardType.value;
+            keycardPreview.setAttribute('data-type', currentType);
+            const inputs = [
+                'keycard-type', 'player-id', 'inventory-name', 'label-name', 
+                'holder-name', 'serial-number', 'circle-count', 'scp-access', 
+                'weapon-access', 'admin-access', 'circle-hex-code', 
+                'border-hex-code', 'label-hex-code'
+            ];
+            
+            inputs.forEach(id => {
+                const savedValue = localStorage.getItem(`scp-keycard-${id}`);
+                if (savedValue !== null) {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = savedValue;
+                        
+                        if (id.includes('hex-code')) {
+                            const pickerId = id.replace('-hex-code', '-picker');
+                            const picker = document.getElementById(pickerId);
+                            if (picker && isValidColor(savedValue)) {
+                                picker.value = normalizeColor(savedValue);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Инициализация при загрузке
+        init();
     });
-
 </script>
